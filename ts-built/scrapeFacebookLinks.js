@@ -36,27 +36,28 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var getGoogleSearchLinks_1 = require("./getGoogleSearchLinks");
-var extractFacebookUrl_1 = require("./extractFacebookUrl");
-var getExactFacebookLink_1 = require("./getExactFacebookLink");
-var scrapeFacebookLinks_1 = require("./scrapeFacebookLinks");
-var company = "stanbic";
-var url = "https://www.google.com/search?q=".concat(company);
-var expression = /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/;
-function getGenre() {
+exports.main = void 0;
+var puppeteer = require("puppeteer");
+var browser;
+var HEADLESS = false;
+function main(url) {
     return __awaiter(this, void 0, void 0, function () {
-        var links, probableFacebook, companyFacebookLink;
+        var page, search;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, (0, getGoogleSearchLinks_1.getGoogleSearchLinks)(url)];
+                case 0: return [4 /*yield*/, puppeteer.launch({ headleass: HEADLESS })];
                 case 1:
-                    links = _a.sent();
-                    probableFacebook = (0, extractFacebookUrl_1.extractFacebookUrl)(links, expression);
-                    companyFacebookLink = (0, getExactFacebookLink_1.getExactFacebookLink)(probableFacebook, expression);
-                    (0, scrapeFacebookLinks_1.main)(companyFacebookLink[0]);
+                    browser = _a.sent();
+                    return [4 /*yield*/, browser.newPage()];
+                case 2:
+                    page = _a.sent();
+                    search = "bord";
+                    return [4 /*yield*/, page.goto(url)];
+                case 3:
+                    _a.sent();
                     return [2 /*return*/];
             }
         });
     });
 }
-getGenre();
+exports.main = main;

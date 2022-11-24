@@ -36,27 +36,36 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var getGoogleSearchLinks_1 = require("./getGoogleSearchLinks");
-var extractFacebookUrl_1 = require("./extractFacebookUrl");
-var getExactFacebookLink_1 = require("./getExactFacebookLink");
-var scrapeFacebookLinks_1 = require("./scrapeFacebookLinks");
-var company = "stanbic";
-var url = "https://www.google.com/search?q=".concat(company);
-var expression = /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/;
-function getGenre() {
+exports.getGoogleSearchLinks = void 0;
+var cheerio = require("cheerio");
+var axios = require("axios");
+var links_data = [];
+function getGoogleSearchLinks(url) {
     return __awaiter(this, void 0, void 0, function () {
-        var links, probableFacebook, companyFacebookLink;
+        var response, data, $_1, links, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, (0, getGoogleSearchLinks_1.getGoogleSearchLinks)(url)];
+                case 0:
+                    _a.trys.push([0, 3, , 4]);
+                    return [4 /*yield*/, axios.get(url)];
                 case 1:
-                    links = _a.sent();
-                    probableFacebook = (0, extractFacebookUrl_1.extractFacebookUrl)(links, expression);
-                    companyFacebookLink = (0, getExactFacebookLink_1.getExactFacebookLink)(probableFacebook, expression);
-                    (0, scrapeFacebookLinks_1.main)(companyFacebookLink[0]);
-                    return [2 /*return*/];
+                    response = _a.sent();
+                    return [4 /*yield*/, response.data];
+                case 2:
+                    data = _a.sent();
+                    $_1 = cheerio.load(data);
+                    links = $_1("a");
+                    $_1(links).each(function (index, element) {
+                        links_data.push($_1(element).attr("href"));
+                        // console.log(links_data);
+                    });
+                    return [2 /*return*/, links_data];
+                case 3:
+                    error_1 = _a.sent();
+                    return [2 /*return*/, error_1];
+                case 4: return [2 /*return*/];
             }
         });
     });
 }
-getGenre();
+exports.getGoogleSearchLinks = getGoogleSearchLinks;

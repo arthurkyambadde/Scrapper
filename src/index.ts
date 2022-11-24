@@ -1,41 +1,23 @@
-import { GenericHTMLFormElement } from "axios";
-import { html } from "cheerio/lib/api/manipulation";
-import { each } from "cheerio/lib/api/traversing";
+import { getGoogleSearchLinks } from "./getGoogleSearchLinks";
+import { extractFacebookUrl } from "./extractFacebookUrl";
+import { getExactFacebookLink } from "./getExactFacebookLink";
+import { main } from "./scrapeFacebookLinks";
 
-const cheerio = require("cheerio");
-const axios = require("axios");
-
-const links_data: string[] = [];
-
-const company: string = "ntv";
+const company: string = "stanbic";
 const url = `https://www.google.com/search?q=${company}`;
 
+const expression: RegExp =
+  /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/;
+
 async function getGenre() {
-  try {
-    const response = await axios.get(url);
+  const links = await getGoogleSearchLinks(url);
+  const probableFacebook = extractFacebookUrl(links as string[], expression);
+  const companyFacebookLink = getExactFacebookLink(
+    probableFacebook,
+    expression
+  );
 
-    const $ = cheerio.load(response.data);
-    const links = $("a");
-
-    links.each(function (index: number, element: any) {
-      links_data.push($(element).attr("href"));
-    });
-  } catch (error) {
-    console.log(error);
-  }
-  // console.log(links_data);
-
-  const expression: RegExp =
-    /(?:https?:\/\/)?(?:www\.)?(mbasic.facebook|m\.facebook|facebook|fb)\.(com|me)\/(?:(?:\w\.)*#!\/)?(?:pages\/)?(?:[\w\-\.]*\/)*([\w\-\.]*)/;
-
-  links_data.forEach((url) => {
-    const match = expression.test(url);
-    if (match) {
-      console.log(match);
-      let facebook: string = url.slice(7, 45);
-      console.log(facebook);
-    }
-  });
+  main(companyFacebookLink[0]);
 }
 
 getGenre();
